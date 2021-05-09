@@ -30,3 +30,9 @@ vscode 插件 -> 从 VSIX 安装
 ```
 选中颜色 -> ctrl+f1 （mac: cmd+f1）
 ```
+
+###### 插件市场地址
+>
+```
+https://marketplace.visualstudio.com/items?itemName=fredu.color-conversion
+```
