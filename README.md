@@ -1,12 +1,12 @@
 # vscode-color-conversion
-###### 项目说明
+#### 项目说明
 
 >
 ```
 vscode 中 用于颜色转换的一个插件
 ```
 
-###### 安装
+#### 安装
 >一.插件市场安装方式
 >
 ```
@@ -19,7 +19,7 @@ color-conversion
 vscode 插件 -> 从 VSIX 安装
 ```
 
-###### 使用
+#### 使用
 >一.指令
 >
 ```
@@ -31,8 +31,11 @@ vscode 插件 -> 从 VSIX 安装
 选中颜色 -> ctrl+f1 （mac: cmd+f1）
 ```
 
-###### 插件市场地址
+#### 插件市场地址
 >
-```
-https://marketplace.visualstudio.com/items?itemName=fredu.color-conversion
-```
+[vscode marketplace](https://marketplace.visualstudio.com/items?itemName=fredu.color-conversion)
+
+
+#### 演示
+>
+![color-conversion](https://i.imgur.com/OR38BQy.gif)
