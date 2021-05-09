@@ -1,0 +1,69 @@
+{
+  "name": "color-conversion",
+  "displayName": "color-conversion",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.54.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:color-conversion.colorConversion"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "color-conversion.colorConversion",
+        "title": "Color Conversion",
+        "icon": {
+          "light": "./static/color-conversion-light.png",
+          "dark": "./static/color-conversion-dark.png"
+        }
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "editorFocus",
+          "command": "color-conversion.colorConversion",
+          "alt": "",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "editorHasSelection && resourceFilename =~ /.js|.vue|.ts|.css|.scss|.less|.stylus|.html/",
+          "command": "color-conversion.colorConversion",
+          "group": "0_Starling"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "color-conversion.colorConversion",
+        "key": "ctrl+f1",
+        "mac": "cmd+f1",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.54.0",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.2.1",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0"
+  }
+}
