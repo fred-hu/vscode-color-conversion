@@ -15,7 +15,7 @@
   "activationEvents": [
     "onCommand:color-conversion.colorConversion"
   ],
-  "icon": "./static/color.png",
+  "icon": "./static/colors.png",
   "main": "./extension.js",
   "contributes": {
     "commands": [
