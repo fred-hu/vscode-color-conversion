@@ -3,14 +3,13 @@
 
 >
 ```
-vscode 中 用于颜色转换的一个插件
+vscode 中 用于颜色转换的一个插件，支持hex、rgb、rgba、hsl、hsla的相互转换
 ```
-
 #### 安装
 >一.插件市场安装方式
 >
 ```
-color-conversion
+搜索color conversion
 ```
 >二.vsix安装方式
 >
