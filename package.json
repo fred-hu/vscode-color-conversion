@@ -4,7 +4,8 @@
   "description": "vscode 颜色转换插件",
   "publisher": "fredu",
   "repository": "https://github.com/fred-hu/vscode-color-conversion",
-  "version": "0.0.2",
+  "version": "0.0.3",
+  "keywords": ["vscode", "plugin", "color", "color change", "color convert", "color conversion"],
   "engines": {
     "vscode": "^1.54.0"
   },
@@ -14,6 +15,7 @@
   "activationEvents": [
     "onCommand:color-conversion.colorConversion"
   ],
+  "icon": "./static/color.png",
   "main": "./extension.js",
   "contributes": {
     "commands": [
