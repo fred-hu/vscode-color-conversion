@@ -1,10 +1,10 @@
 {
   "name": "color-conversion",
-  "displayName": "color-conversion",
+  "displayName": "color conversion",
   "description": "vscode 颜色转换插件",
   "publisher": "fredu",
   "repository": "https://github.com/fred-hu/vscode-color-conversion",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "keywords": ["vscode", "plugin", "color", "color change", "color convert", "color conversion"],
   "engines": {
     "vscode": "^1.54.0"
@@ -15,7 +15,7 @@
   "activationEvents": [
     "onCommand:color-conversion.colorConversion"
   ],
-  "icon": "./static/colors.png",
+  "icon": "static/colors.png",
   "main": "./extension.js",
   "contributes": {
     "commands": [
@@ -23,8 +23,8 @@
         "command": "color-conversion.colorConversion",
         "title": "Color Conversion",
         "icon": {
-          "light": "./static/color-conversion-light.png",
-          "dark": "./static/color-conversion-dark.png"
+          "light": "static/color-conversion-light.png",
+          "dark": "static/color-conversion-dark.png"
         }
       }
     ],
