@@ -44,3 +44,9 @@ vscode 插件 -> 从 VSIX 安装
 1. pnpm i
 2. 完成后进入 VS Code，按下F5，你会立即看到一个插件发开主机窗口，其中就运行着插件。
 ```
+
+#### tag
+```
+git tag vx.x.x(版本号)
+git push origin vx.x.x(版本号)
+```
