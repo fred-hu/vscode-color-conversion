@@ -38,3 +38,9 @@ vscode 插件 -> 从 VSIX 安装
 #### 演示
 >
 ![color-conversion](https://i.imgur.com/OR38BQy.gif)
+
+#### 运行
+```
+1. pnpm i
+2. 完成后进入 VS Code，按下F5，你会立即看到一个插件发开主机窗口，其中就运行着插件。
+```
