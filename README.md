@@ -41,7 +41,7 @@ vscode 插件 -> 从 VSIX 安装
 
 #### 运行
 ```
-1. pnpm i
+1. npm i
 2. 完成后进入 VS Code，按下F5，你会立即看到一个插件发开主机窗口，其中就运行着插件。
 ```
 
@@ -49,4 +49,12 @@ vscode 插件 -> 从 VSIX 安装
 ```
 git tag vx.x.x(版本号)
 git push origin vx.x.x(版本号)
+```
+
+#### 发布
+```
+npm install -g vsce
+vsce package
+vsce login <publisher-name>
+vsce publish 或者 vsce publish [major|minor|patch]
 ```
