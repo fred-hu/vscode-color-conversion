@@ -1,60 +1,69 @@
 # vscode-color-conversion
-#### 项目说明
+<p align="center">
+  <img width="100" src="https://github.com/fred-hu/vscode-color-conversion/raw/master/static/colors.png" />
+</p>
+<p align="center">
+  English | <a href="/i18n/README.zh-CN.md">简体中文</a>
+</p>
+
+
+#### Project Description
 
 >
 ```
-vscode 中 用于颜色转换的一个插件，支持hex、rgb、rgba、hsl、hsla的相互转换
-```
-#### 安装
->一.插件市场安装方式
->
-```
-搜索color conversion
-```
->二.vsix安装方式
->
-```
-下载color-conversion.vsix
-vscode 插件 -> 从 VSIX 安装
+A plugin for color conversion in vscode, supporting mutual conversion among hex, rgb, rgba, hsl, and hsla.
 ```
 
-#### 使用
->一.指令
+#### Installation
+>1.Plugin Marketplace Installation
 >
 ```
-选中颜色 -> ctrl shift p -> color conversion
+Search for color conversion
 ```
->二.快捷键
+>2.VSIX Installation Method
 >
 ```
-选中颜色 -> ctrl+f1 （mac: cmd+f1）
+Download color-conversion.vsix
+VS Code Extensions -> Install from VSIX
 ```
 
-#### 插件市场地址
+#### Usage
+>1.Command
+>
+```
+Select color -> ctrl shift p -> color conversion
+```
+>2.Shortcut
+>
+```
+Select color -> ctrl+f1 (mac: cmd+f1)
+```
+
+#### Marketplace URL
 >
 [vscode marketplace](https://marketplace.visualstudio.com/items?itemName=fredu.color-conversion)
 
 
-#### 演示
+#### Demo
 >
 ![color-conversion](https://i.imgur.com/OR38BQy.gif)
 
-#### 运行
+#### Running
 ```
 1. npm i
-2. 完成后进入 VS Code，按下F5，你会立即看到一个插件发开主机窗口，其中就运行着插件。
+2. After completion, enter VS Code, press F5, you will immediately see a development host window running the plugin.
 ```
 
-#### tag
+#### Tagging
 ```
-git tag vx.x.x(版本号)
-git push origin vx.x.x(版本号)
+git tag vx.x.x(version number)
+git push origin vx.x.x(version number)
 ```
 
-#### 发布
+#### Publishing
 ```
 npm install -g vsce
 vsce package
 vsce login <publisher-name>
-vsce publish 或者 vsce publish [major|minor|patch]
+vsce publish or vsce publish [major|minor|patch]
 ```
