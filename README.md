@@ -8,11 +8,7 @@
 
 
 #### Project Description
-
->
-```
 A plugin for color conversion in vscode, supporting mutual conversion among hex, rgb, rgba, hsl, and hsla.
-```
 
 #### Installation
 >1.Plugin Marketplace Installation
