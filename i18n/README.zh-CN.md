@@ -3,7 +3,7 @@
   <img width="100" src="https://github.com/fred-hu/vscode-color-conversion/raw/master/static/colors.png" />
 </p>
 <p align="center">
-  简体中文 | <a href="../README.md">English</a>
+  <a href="../README.md">English</a> | 简体中文
 </p>
 
 #### 项目说明
