@@ -1,0 +1,18 @@
+{
+  "displayName": "颜色转换",
+  "description": "VS Code 颜色转换插件，支持 hex、rgb、rgba、hsl、hsla 之间的相互转换。",
+  "command.colorConversion.title": "颜色转换",
+  "configuration.title": "颜色转换",
+  "configuration.defaultFormat.description": "颜色转换命令使用的目标格式，\"ask\" 表示每次都弹出选择框。",
+  "configuration.defaultFormat.ask": "每次弹出快捷选择框",
+  "configuration.defaultFormat.hex": "转换为 hex",
+  "configuration.defaultFormat.rgb": "转换为 rgb",
+  "configuration.defaultFormat.rgba": "转换为 rgba",
+  "configuration.defaultFormat.hsl": "转换为 hsl",
+  "configuration.defaultFormat.hsla": "转换为 hsla",
+  "configuration.spacing.description": "在 rgb()/rgba()/hsl()/hsla() 输出的逗号后补空格，例如 rgb(255, 0, 0)。",
+  "configuration.hexCase.description": "hex 输出使用的大小写。",
+  "configuration.hexCase.lower": "小写，例如 #ff0000",
+  "configuration.hexCase.upper": "大写，例如 #FF0000",
+  "configuration.hexCase.preserve": "保留原始 hex 值的大小写"
+}

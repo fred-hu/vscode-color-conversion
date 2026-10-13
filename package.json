@@ -1,7 +1,7 @@
 {
   "name": "color-conversion",
-  "displayName": "color conversion",
-  "description": "vscode 颜色转换插件",
+  "displayName": "%displayName%",
+  "description": "%description%",
   "publisher": "fredu",
   "repository": "https://github.com/fred-hu/vscode-color-conversion",
   "version": "0.0.5",
@@ -14,21 +14,23 @@
     "color conversion"
   ],
   "engines": {
-    "vscode": "^1.54.0"
+    "vscode": "^1.74.0",
+    "node": ">=18"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:color-conversion.colorConversion"
-  ],
   "icon": "static/colors.png",
   "main": "./extension.js",
+  "l10n": "./l10n",
+  "volta": {
+    "node": "20.18.0"
+  },
   "contributes": {
     "commands": [
       {
         "command": "color-conversion.colorConversion",
-        "title": "Color Conversion",
+        "title": "%command.colorConversion.title%",
         "icon": {
           "light": "static/color-conversion-light.png",
           "dark": "static/color-conversion-dark.png"
@@ -46,7 +48,7 @@
       ],
       "editor/context": [
         {
-          "when": "editorHasSelection && resourceFilename =~ /.js|.vue|.ts|.css|.scss|.less|.stylus|.html/",
+          "when": "editorHasSelection && resourceExtname =~ /^\\.(js|vue|ts|css|scss|less|stylus|html)$/",
           "command": "color-conversion.colorConversion",
           "group": "0_Starling"
         }
@@ -59,10 +61,57 @@
         "mac": "cmd+f1",
         "when": "editorTextFocus"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "color-conversion.defaultFormat": {
+          "type": "string",
+          "enum": [
+            "ask",
+            "hex",
+            "rgb",
+            "rgba",
+            "hsl",
+            "hsla"
+          ],
+          "enumDescriptions": [
+            "%configuration.defaultFormat.ask%",
+            "%configuration.defaultFormat.hex%",
+            "%configuration.defaultFormat.rgb%",
+            "%configuration.defaultFormat.rgba%",
+            "%configuration.defaultFormat.hsl%",
+            "%configuration.defaultFormat.hsla%"
+          ],
+          "default": "ask",
+          "description": "%configuration.defaultFormat.description%"
+        },
+        "color-conversion.spacing": {
+          "type": "boolean",
+          "default": false,
+          "description": "%configuration.spacing.description%"
+        },
+        "color-conversion.hexCase": {
+          "type": "string",
+          "enum": [
+            "lower",
+            "upper",
+            "preserve"
+          ],
+          "enumDescriptions": [
+            "%configuration.hexCase.lower%",
+            "%configuration.hexCase.upper%",
+            "%configuration.hexCase.preserve%"
+          ],
+          "default": "lower",
+          "description": "%configuration.hexCase.description%"
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",
+    "test:unit": "mocha --ui tdd \"test/unit/**/*.test.js\"",
     "pretest": "npm run lint",
     "test": "node ./test/runTest.js"
   },
@@ -70,14 +119,10 @@
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.14.9",
-    "@types/vscode": "^1.54.0",
+    "@types/vscode": "^1.74.0",
+    "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.6.0",
     "glob": "^10.4.2",
-    "mocha": "^10.5.2",
-    "typescript": "^5.5.2",
-    "vscode-test": "^1.6.1"
-  },
-  "dependencies": {
-    "jsdom": "^24.1.0"
+    "mocha": "^10.5.2"
   }
 }

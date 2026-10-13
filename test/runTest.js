@@ -1,6 +1,6 @@
 const path = require('path');
 
-const { runTests } = require('vscode-test');
+const { runTests } = require('@vscode/test-electron');
 
 async function main() {
 	try {
@@ -15,7 +15,7 @@ async function main() {
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ extensionDevelopmentPath, extensionTestsPath });
 	} catch (err) {
-		console.error('Failed to run tests');
+		console.error('Failed to run tests', err);
 		process.exit(1);
 	}
 }

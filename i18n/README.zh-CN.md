@@ -34,6 +34,24 @@ vscode 插件 -> 从 VSIX 安装
 ```
 选中颜色 -> ctrl+f1 （mac: cmd+f1）
 ```
+>三.光标
+>
+```
+也可以把光标直接放在颜色上（hex、rgb()/hsl() 或颜色关键字），无需选中。
+```
+>四.悬停 / 代码操作
+>
+```
+悬停颜色可预览各种格式；也可用灯泡菜单（重构）就地转换为指定格式。
+```
+
+#### 配置项
+
+| 配置 | 默认值 | 说明 |
+| --- | --- | --- |
+| `color-conversion.defaultFormat` | `ask` | 命令使用的目标格式，`ask` 表示每次弹出选择框。 |
+| `color-conversion.spacing` | `false` | 在逗号后补空格，例如 `rgb(255, 0, 0)`。 |
+| `color-conversion.hexCase` | `lower` | `lower`、`upper` 或 `preserve`（保留原始 hex 大小写）。 |
 
 #### 插件市场地址
 >
@@ -48,6 +66,14 @@ vscode 插件 -> 从 VSIX 安装
 ```
 1. npm i
 2. 完成后进入 VS Code，按下F5，你会立即看到一个插件发开主机窗口，其中就运行着插件。
+```
+
+#### 开发校验
+```
+# Node 版本已通过 package.json 的 "volta" 字段与 .nvmrc 固定为 20；ESLint 9 需要 Node >= 18
+npm run lint        # ESLint 代码检查
+npm run test:unit   # 单元测试（纯函数 + 桩掉 vscode 的扩展逻辑）
+npm test            # VS Code 集成测试（会下载 VS Code）
 ```
 
 #### tag

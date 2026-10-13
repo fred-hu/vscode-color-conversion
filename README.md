@@ -34,6 +34,24 @@ Select color -> ctrl shift p -> color conversion
 ```
 Select color -> ctrl+f1 (mac: cmd+f1)
 ```
+>3.Cursor
+>
+```
+You can also place the cursor on a color (hex, rgb()/hsl() or color keyword) without selecting it.
+```
+>4.Hover / Code Action
+>
+```
+Hover a color to preview all formats, or use the light bulb (Refactor) to convert a color in place.
+```
+
+#### Settings
+
+| Setting | Default | Description |
+| --- | --- | --- |
+| `color-conversion.defaultFormat` | `ask` | Target format of the command. `ask` shows a quick pick every time. |
+| `color-conversion.spacing` | `false` | Add a space after commas, for example `rgb(255, 0, 0)`. |
+| `color-conversion.hexCase` | `lower` | `lower`, `upper`, or `preserve` (keep the case of the original hex value). |
 
 #### Marketplace URL
 >
@@ -48,6 +66,14 @@ Select color -> ctrl+f1 (mac: cmd+f1)
 ```
 1. npm i
 2. After completion, enter VS Code, press F5, you will immediately see a development host window running the plugin.
+```
+
+#### Development checks
+```
+# Node 20 is pinned in package.json ("volta") and .nvmrc; ESLint 9 requires Node >= 18
+npm run lint        # ESLint
+npm run test:unit   # unit tests (pure libs + extension logic with a stubbed vscode module)
+npm test            # VS Code integration tests (downloads VS Code)
 ```
 
 #### Tagging

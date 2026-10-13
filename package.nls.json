@@ -1,0 +1,18 @@
+{
+  "displayName": "color conversion",
+  "description": "A VS Code extension that converts colors between hex, rgb, rgba, hsl and hsla.",
+  "command.colorConversion.title": "Color Conversion",
+  "configuration.title": "Color Conversion",
+  "configuration.defaultFormat.description": "Target format used by the Color Conversion command. \"ask\" always shows a quick pick.",
+  "configuration.defaultFormat.ask": "Always ask with a quick pick",
+  "configuration.defaultFormat.hex": "Convert to hex",
+  "configuration.defaultFormat.rgb": "Convert to rgb",
+  "configuration.defaultFormat.rgba": "Convert to rgba",
+  "configuration.defaultFormat.hsl": "Convert to hsl",
+  "configuration.defaultFormat.hsla": "Convert to hsla",
+  "configuration.spacing.description": "Add a space after the commas of rgb()/rgba()/hsl()/hsla() output, for example rgb(255, 0, 0).",
+  "configuration.hexCase.description": "Letter case used for hex output.",
+  "configuration.hexCase.lower": "Lowercase, for example #ff0000",
+  "configuration.hexCase.upper": "Uppercase, for example #FF0000",
+  "configuration.hexCase.preserve": "Preserve the letter case of the original hex value"
+}

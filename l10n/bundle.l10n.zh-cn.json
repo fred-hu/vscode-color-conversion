@@ -1,0 +1,8 @@
+{
+  "No valid color selected": "未选中有效的颜色",
+  "Select a color format": "选择颜色转换格式",
+  "Color is already in {0} format": "颜色已是 {0} 格式",
+  "Color converted": "颜色转换完成",
+  "Color conversion failed": "颜色转换失败",
+  "Convert to {0}": "转换为 {0}"
+}
