@@ -104,12 +104,34 @@ git push origin v0.0.6
 
 ##### Open VSX（可选）
 
-工作流也可以发布到 [Open VSX](https://open-vsx.org)（VSCodium、code-server 等非微软发行版使用）。未配置下面的密钥时会打印警告并跳过，不会影响插件市场的发布。
+工作流也可以发布到 [Open VSX](https://open-vsx.org)（VSCodium、code-server 等非微软发行版使用）。未配置 `OVSX_PAT` 密钥时会打印警告并跳过，不会影响插件市场的发布。
 
-1. 用 GitHub 账号登录 https://open-vsx.org 。
-2. 在 https://open-vsx.org/user-settings/namespaces 创建命名空间 `fredu`，必须与 `package.json` 的 `publisher` 一致；如果不是你的 GitHub 用户名，还需要签署 Eclipse publisher agreement。
-3. 在 https://open-vsx.org/user-settings/tokens 创建访问令牌。
-4. 先自检，再把它添加为仓库密钥 `OVSX_PAT`：
+> **当前状态：卡在命名空间所有权上。** 命名空间叫 `fredu`，是因为它由 `package.json` 的 `publisher` 字段决定——Open VSX 的命名空间取自该字段，与 GitHub 账号名（`fred-hu`）无关。Open VSX 上的 `fredu` 命名空间是第三方搬运本扩展时创建的（`publishedBy.loginName = jdkcoder`，2024-07-18），目前**没有 owner**（`"verified": false`），且 `fred-hu` 不是其成员，因此发布会报 `Insufficient access rights for publisher: fredu`。
+>
+> 在拿到所有权之前，要么不要配置 `OVSX_PAT` 密钥（该步骤会自动跳过），要么把 Open VSX 步骤从工作流里去掉。
+
+认领 `fredu` 所有权的步骤：
+
+1. 在 https://accounts.eclipse.org/user/register 注册 Eclipse 账号，*GitHub Username* 一栏必须填**你登录 open-vsx.org 用的同一个 GitHub 账号**。
+2. 打开 https://open-vsx.org/user-settings/profile，点 **Log in with Eclipse** 授权，再点 **Show Publisher Agreement** 并同意。
+3. 用 [claim-namespace-ownership](https://github.com/EclipseFdn/open-vsx.org/issues/new/choose) 模板为命名空间 `fredu` 提交 issue。**只勾选适用项**（命名空间当前无 owner、GitHub 历史满 12 个月、*Option 1: VS Code Publisher with Repo* 及其子项），并在 *Claim evidence* 里填写证据——不填证据不会被批准。
+
+> `npx ovsx create-namespace fredu -p <token>` 在这里行不通，它会返回 `Namespace already exists: fredu`。而且该命名空间没有 owner，没人有权限把你加为成员——所以上面那条认领 issue 是拿到 `fredu` 发布权的唯一途径。
+
+可用的证据：
+
+```
+仓库（归属发起认领的 GitHub 账号）：
+https://github.com/fred-hu/vscode-color-conversion
+
+声明 publisher 字段的提交：
+https://github.com/fred-hu/vscode-color-conversion/commit/cae368d1d87ed8220e1ac296c1f3f2c338b2f0c0
+
+VS Code 插件市场发布者：https://marketplace.visualstudio.com/publishers/fredu
+已发布扩展：https://marketplace.visualstudio.com/items?itemName=fredu.color-conversion
+```
+
+拿到所有权后，在 https://open-vsx.org/user-settings/tokens 创建令牌，自检通过后存为仓库密钥 `OVSX_PAT`：
 ```
 npx ovsx verify-pat fredu -p <token>
 ```

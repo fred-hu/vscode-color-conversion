@@ -104,12 +104,34 @@ A manual run from the Actions tab only builds the VSIX unless the `publish` inpu
 
 ##### Open VSX (optional)
 
-The workflow can also publish to [Open VSX](https://open-vsx.org), which is what VSCodium, code-server and other non-Microsoft builds use. It is skipped with a warning when the secret below is missing, so the Marketplace release is never blocked by it.
+The workflow can also publish to [Open VSX](https://open-vsx.org), which is what VSCodium, code-server and other non-Microsoft builds use. The step is skipped with a warning when the `OVSX_PAT` secret is missing, so a Marketplace release is never blocked by it.
 
-1. Sign in to https://open-vsx.org with GitHub.
-2. Create the namespace `fredu` at https://open-vsx.org/user-settings/namespaces. It has to match the `publisher` field in `package.json`; a namespace that is not your GitHub login additionally needs the Eclipse publisher agreement.
-3. Create an access token at https://open-vsx.org/user-settings/tokens.
-4. Sanity check it, then store it as the `OVSX_PAT` repository secret:
+> **Current status: blocked on namespace ownership.** The namespace is `fredu` because that is the `publisher` field in `package.json` - Open VSX namespaces are derived from it, not from a GitHub account name (the GitHub login is `fred-hu`). On Open VSX the `fredu` namespace was created by a third party that mirrored this extension (`publishedBy.loginName = jdkcoder`, 2024-07-18). It has no owner (`"verified": false`) and `fred-hu` is not a member, so publishing fails with `Insufficient access rights for publisher: fredu`.
+>
+> Until ownership is granted, either keep the `OVSX_PAT` secret unset (the step then skips) or remove the Open VSX step from the workflow.
+
+Claiming ownership of `fredu`:
+
+1. Register an Eclipse account at https://accounts.eclipse.org/user/register. Put **the same GitHub account** that you use to log in to open-vsx.org into the *GitHub Username* field.
+2. Open https://open-vsx.org/user-settings/profile, click **Log in with Eclipse**, then **Show Publisher Agreement** and agree to it.
+3. Open an issue with the [claim-namespace-ownership](https://github.com/EclipseFdn/open-vsx.org/issues/new/choose) template for the namespace `fredu`. Tick only the boxes that apply (namespace not currently owned, 12+ months of GitHub history, *Option 1: VS Code Publisher with Repo* and its sub-option) and fill in *Claim evidence* - a request without evidence is not approved.
+
+> `npx ovsx create-namespace fredu -p <token>` is not a way out here: it fails with `Namespace already exists: fredu`. Because the namespace has no owner, nobody can add you as a member either - the claim issue above is the only way to gain publishing rights for `fredu`.
+
+Evidence to use:
+
+```
+Repo, owned by the requesting GitHub ID:
+https://github.com/fred-hu/vscode-color-conversion
+
+Commit declaring the publisher field:
+https://github.com/fred-hu/vscode-color-conversion/commit/cae368d1d87ed8220e1ac296c1f3f2c338b2f0c0
+
+VS Code Marketplace publisher: https://marketplace.visualstudio.com/publishers/fredu
+Published extension: https://marketplace.visualstudio.com/items?itemName=fredu.color-conversion
+```
+
+Once ownership is granted, create a token at https://open-vsx.org/user-settings/tokens, sanity check it, and store it as the `OVSX_PAT` repository secret:
 ```
 npx ovsx verify-pat fredu -p <token>
 ```
