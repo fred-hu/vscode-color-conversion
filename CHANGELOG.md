@@ -19,6 +19,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - 最低 VS Code 版本提升到 ^1.74.0，移除冗余的 `activationEvents`
 
 ### 新增
+- GitHub Actions 发布工作流 [.github/workflows/publish.yml](.github/workflows/publish.yml)：推送 `v*` tag 时自动 lint、跑单测、校验 tag 与 `package.json` 版本一致、打包并发布到 VS Code 插件市场（需配置 `VSCE_PAT` 密钥）；可选发布到 Open VSX（需 `OVSX_PAT` 密钥，未配置则跳过）
 - 右键菜单：选中（或光标停在）颜色时出现「颜色转换」子菜单，可直接转成 hex/rgb/rgba/hsl/hsla；子菜单由 `colorConversion.hasColor` 上下文键控制，只有识别到颜色才显示
 - 配置项 `color-conversion.defaultFormat` / `color-conversion.spacing` / `color-conversion.hexCase`
 - 悬停（Hover）展示颜色的 hex/rgb/rgba/hsl/hsla 全部格式

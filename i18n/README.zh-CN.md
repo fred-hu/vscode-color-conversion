@@ -88,9 +88,35 @@ git push origin vx.x.x(版本号)
 ```
 
 #### 发布
+
+发布到 VS Code 插件市场已由 [.github/workflows/publish.yml](./.github/workflows/publish.yml) 自动化。
+
+一次性配置：创建一个带 **Marketplace > Manage** 权限的 Azure DevOps 个人访问令牌，然后以 `VSCE_PAT` 为名添加到仓库密钥（Settings > Secrets and variables > Actions）。
+
+发布流程：修改 `package.json` 里的 `version` 并提交，然后打一个与版本号一致的 tag：
 ```
-npm install -g vsce
-vsce package
+git tag v0.0.6
+git push origin v0.0.6
+```
+工作流会安装依赖、执行 lint 与单元测试、校验 tag 与 `package.json` 版本一致、打包 VSIX、以构建产物形式上传，并发布到插件市场（若该版本已存在则跳过而非报错）。
+
+在 Actions 页面手动触发时，默认只打包，勾选 `publish` 输入才会发布。
+
+##### Open VSX（可选）
+
+工作流也可以发布到 [Open VSX](https://open-vsx.org)（VSCodium、code-server 等非微软发行版使用）。未配置下面的密钥时会打印警告并跳过，不会影响插件市场的发布。
+
+1. 用 GitHub 账号登录 https://open-vsx.org 。
+2. 在 https://open-vsx.org/user-settings/namespaces 创建命名空间 `fredu`，必须与 `package.json` 的 `publisher` 一致；如果不是你的 GitHub 用户名，还需要签署 Eclipse publisher agreement。
+3. 在 https://open-vsx.org/user-settings/tokens 创建访问令牌。
+4. 先自检，再把它添加为仓库密钥 `OVSX_PAT`：
+```
+npx ovsx verify-pat fredu -p <token>
+```
+
+手动发布依然可用：
+```
+npm install -g @vscode/vsce
 vsce login <publisher-name>
 vsce publish 或者 vsce publish [major|minor|patch]
 ```

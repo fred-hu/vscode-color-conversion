@@ -1,0 +1,85 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the packaged VSIX to the VS Code Marketplace
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Build and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Check the tag matches the package version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag v$tag does not match the package.json version $version"
+            exit 1
+          fi
+          echo "Releasing version $version"
+
+      - name: Package the extension
+        run: npx --yes @vscode/vsce@3 package --out color-conversion.vsix
+
+      - name: Upload the VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: color-conversion-vsix
+          path: color-conversion.vsix
+          if-no-files-found: error
+
+      - name: Publish to the VS Code Marketplace
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          if [ -z "$VSCE_PAT" ]; then
+            echo "::error::Missing the VSCE_PAT secret. Create an Azure DevOps personal access token with the Marketplace > Manage scope and add it as a repository secret named VSCE_PAT."
+            exit 1
+          fi
+          npx --yes @vscode/vsce@3 publish --packagePath color-conversion.vsix --pat "$VSCE_PAT" --skip-duplicate
+
+      - name: Publish to Open VSX
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: |
+          if [ -z "$OVSX_PAT" ]; then
+            echo "::warning::OVSX_PAT is not configured, skipping the Open VSX publish."
+            exit 0
+          fi
+          npx --yes ovsx@1 publish color-conversion.vsix -p "$OVSX_PAT" --skip-duplicate

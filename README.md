@@ -88,9 +88,35 @@ git push origin vx.x.x(version number)
 ```
 
 #### Publishing
+
+Publishing to the VS Code Marketplace is automated by [.github/workflows/publish.yml](./.github/workflows/publish.yml).
+
+One-time setup: create an Azure DevOps personal access token with the **Marketplace > Manage** scope, then add it as a repository secret named `VSCE_PAT` (Settings > Secrets and variables > Actions).
+
+To release, bump `version` in `package.json`, commit it, then push a matching tag:
 ```
-npm install -g vsce
-vsce package
+git tag v0.0.6
+git push origin v0.0.6
+```
+The workflow installs dependencies, lints, runs the unit tests, verifies that the tag matches `package.json`, packages the VSIX, uploads it as a build artifact and publishes it (a version that is already on the Marketplace is skipped instead of failing).
+
+A manual run from the Actions tab only builds the VSIX unless the `publish` input is ticked.
+
+##### Open VSX (optional)
+
+The workflow can also publish to [Open VSX](https://open-vsx.org), which is what VSCodium, code-server and other non-Microsoft builds use. It is skipped with a warning when the secret below is missing, so the Marketplace release is never blocked by it.
+
+1. Sign in to https://open-vsx.org with GitHub.
+2. Create the namespace `fredu` at https://open-vsx.org/user-settings/namespaces. It has to match the `publisher` field in `package.json`; a namespace that is not your GitHub login additionally needs the Eclipse publisher agreement.
+3. Create an access token at https://open-vsx.org/user-settings/tokens.
+4. Sanity check it, then store it as the `OVSX_PAT` repository secret:
+```
+npx ovsx verify-pat fredu -p <token>
+```
+
+Manual publishing still works:
+```
+npm install -g @vscode/vsce
 vsce login <publisher-name>
-vsce publish or vsce publish [major|minor|patch]
+vsce publish [major|minor|patch]
 ```
