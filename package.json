@@ -4,7 +4,7 @@
   "description": "%description%",
   "publisher": "fredu",
   "repository": "https://github.com/fred-hu/vscode-color-conversion",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "keywords": [
     "vscode",
     "plugin",
