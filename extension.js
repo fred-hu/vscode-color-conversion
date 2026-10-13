@@ -13,6 +13,16 @@ const {
 const COMMAND_ID = 'color-conversion.colorConversion'
 const CONFIG_SECTION = 'color-conversion'
 const FORMATS = ['hex', 'rgb', 'rgba', 'hsl', 'hsla']
+// 右键菜单里"直接转成某格式"的命令，与 FORMATS 一一对应
+const CONVERT_COMMANDS = {
+  hex: 'color-conversion.convertToHex',
+  rgb: 'color-conversion.convertToRgb',
+  rgba: 'color-conversion.convertToRgba',
+  hsl: 'color-conversion.convertToHsl',
+  hsla: 'color-conversion.convertToHsla'
+}
+// 由扩展写入的上下文键：当前选中/光标处是否存在可识别的颜色，用于控制右键菜单显隐
+const COLOR_CONTEXT_KEY = 'colorConversion.hasColor'
 const SUPPORTED_LANGUAGES = [
   'javascript',
   'javascriptreact',
@@ -101,15 +111,74 @@ const buildEdit = (document, range, format, options) => {
   return result === text ? null : { range, result }
 }
 
+const colorRanges = (editor) => collectRanges(editor.document, editor.selections)
+
+/**
+ * 当前编辑器里是否有可识别的颜色（选中或光标处），用于 setContext
+ * @param {vscode.TextEditor | undefined} editor
+ */
+const hasColor = (editor) => !!editor && colorRanges(editor).length > 0
+
+let colorContextValue
+const updateColorContext = (editor) => {
+  const value = hasColor(editor)
+  if (value === colorContextValue) {
+    return
+  }
+  colorContextValue = value
+  vscode.commands.executeCommand('setContext', COLOR_CONTEXT_KEY, value)
+}
+
+/**
+ * 把编辑器里识别到的颜色转成指定格式；返回是否真的改动了文档
+ * @param {vscode.TextEditor} editor
+ * @param {string} format
+ */
+async function applyConversion(editor, format) {
+  const ranges = colorRanges(editor)
+  if (ranges.length === 0) {
+    vscode.window.showInformationMessage(vscode.l10n.t('No valid color selected'))
+    return false
+  }
+
+  const options = getOptions()
+  const edits = ranges.map((range) => buildEdit(editor.document, range, format, options)).filter(Boolean)
+  if (edits.length === 0) {
+    vscode.window.showInformationMessage(vscode.l10n.t('Color is already in {0} format', format))
+    return false
+  }
+
+  const applied = await editor.edit((editBuilder) => {
+    edits.forEach(({ range, result }) => editBuilder.replace(range, result))
+  })
+
+  if (applied) {
+    vscode.window.showInformationMessage(vscode.l10n.t('Color converted'))
+  } else {
+    vscode.window.showErrorMessage(vscode.l10n.t('Color conversion failed'))
+  }
+  return applied
+}
+
+/**
+ * 右键菜单 / 命令面板：直接把选中（或光标处）的颜色转成指定格式
+ * @param {string} format
+ */
+async function convertSelection(format) {
+  const editor = vscode.window.activeTextEditor
+  if (!editor) {
+    return
+  }
+  await applyConversion(editor, format)
+}
+
 async function colorConversion() {
   const editor = vscode.window.activeTextEditor
   if (!editor) {
     return // 没有打开的编辑器
   }
 
-  const { document, selections } = editor
-  const ranges = collectRanges(document, selections)
-  if (ranges.length === 0) {
+  if (colorRanges(editor).length === 0) {
     vscode.window.showInformationMessage(vscode.l10n.t('No valid color selected'))
     return
   }
@@ -125,21 +194,7 @@ async function colorConversion() {
     return // 用户取消，保持文档不变
   }
 
-  const edits = ranges.map((range) => buildEdit(document, range, format, options)).filter(Boolean)
-  if (edits.length === 0) {
-    vscode.window.showInformationMessage(vscode.l10n.t('Color is already in {0} format', format))
-    return
-  }
-
-  const applied = await editor.edit((editBuilder) => {
-    edits.forEach(({ range, result }) => editBuilder.replace(range, result))
-  })
-
-  if (applied) {
-    vscode.window.showInformationMessage(vscode.l10n.t('Color converted'))
-  } else {
-    vscode.window.showErrorMessage(vscode.l10n.t('Color conversion failed'))
-  }
+  await applyConversion(editor, format)
 }
 
 const hoverProvider = {
@@ -187,13 +242,31 @@ const codeActionProvider = {
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-  context.subscriptions.push(
-    vscode.commands.registerCommand(COMMAND_ID, colorConversion),
+  const registrations = [vscode.commands.registerCommand(COMMAND_ID, colorConversion)]
+
+  Object.keys(CONVERT_COMMANDS).forEach((format) => {
+    registrations.push(
+      vscode.commands.registerCommand(CONVERT_COMMANDS[format], () => convertSelection(format))
+    )
+  })
+
+  registrations.push(
     vscode.languages.registerHoverProvider(SUPPORTED_LANGUAGES, hoverProvider),
     vscode.languages.registerCodeActionsProvider(SUPPORTED_LANGUAGES, codeActionProvider, {
       providedCodeActionKinds: [vscode.CodeActionKind.Refactor]
+    }),
+    vscode.window.onDidChangeTextEditorSelection((event) => updateColorContext(event.textEditor)),
+    vscode.window.onDidChangeActiveTextEditor((editor) => updateColorContext(editor)),
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      const editor = vscode.window.activeTextEditor
+      if (editor && event.document === editor.document) {
+        updateColorContext(editor)
+      }
     })
   )
+
+  context.subscriptions.push(...registrations)
+  updateColorContext(vscode.window.activeTextEditor)
 }
 
 // this method is called when your extension is deactivated
@@ -203,6 +276,8 @@ module.exports = {
   activate,
   deactivate,
   colorConversion,
+  convertSelection,
+  updateColorContext,
   hoverProvider,
   codeActionProvider
 }

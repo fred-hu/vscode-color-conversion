@@ -20,6 +20,9 @@
   "categories": [
     "Other"
   ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "icon": "static/colors.png",
   "main": "./extension.js",
   "l10n": "./l10n",
@@ -35,6 +38,32 @@
           "light": "static/color-conversion-light.png",
           "dark": "static/color-conversion-dark.png"
         }
+      },
+      {
+        "command": "color-conversion.convertToHex",
+        "title": "%command.convertToHex.title%"
+      },
+      {
+        "command": "color-conversion.convertToRgb",
+        "title": "%command.convertToRgb.title%"
+      },
+      {
+        "command": "color-conversion.convertToRgba",
+        "title": "%command.convertToRgba.title%"
+      },
+      {
+        "command": "color-conversion.convertToHsl",
+        "title": "%command.convertToHsl.title%"
+      },
+      {
+        "command": "color-conversion.convertToHsla",
+        "title": "%command.convertToHsla.title%"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "color-conversion.submenu",
+        "label": "%submenu.colorConversion.label%"
       }
     ],
     "menus": {
@@ -48,9 +77,35 @@
       ],
       "editor/context": [
         {
-          "when": "editorHasSelection && resourceExtname =~ /^\\.(js|vue|ts|css|scss|less|stylus|html)$/",
-          "command": "color-conversion.colorConversion",
+          "when": "colorConversion.hasColor",
+          "submenu": "color-conversion.submenu",
           "group": "0_Starling"
+        }
+      ],
+      "color-conversion.submenu": [
+        {
+          "command": "color-conversion.convertToHex",
+          "group": "1_conversion"
+        },
+        {
+          "command": "color-conversion.convertToRgb",
+          "group": "1_conversion"
+        },
+        {
+          "command": "color-conversion.convertToRgba",
+          "group": "1_conversion"
+        },
+        {
+          "command": "color-conversion.convertToHsl",
+          "group": "1_conversion"
+        },
+        {
+          "command": "color-conversion.convertToHsla",
+          "group": "1_conversion"
+        },
+        {
+          "command": "color-conversion.colorConversion",
+          "group": "2_format"
         }
       ]
     },

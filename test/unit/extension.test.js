@@ -8,6 +8,9 @@ const state = {
   errors: [],
   edits: [],
   registrations: [],
+  commandHandlers: {},
+  contextCalls: [],
+  contextValue: undefined,
   pickCalled: false,
   pickResult: undefined,
   config: { defaultFormat: 'ask', spacing: false, hexCase: 'lower' }
@@ -69,14 +72,30 @@ const vscodeStub = {
     showQuickPick() {
       state.pickCalled = true
       return Promise.resolve(state.pickResult)
+    },
+    onDidChangeTextEditorSelection(callback) {
+      state.registrations.push('selectionListener')
+      state.selectionListener = callback
+      return { dispose() {} }
+    },
+    onDidChangeActiveTextEditor(callback) {
+      state.registrations.push('activeEditorListener')
+      state.activeEditorListener = callback
+      return { dispose() {} }
     }
   },
   commands: {
     registerCommand(id, handler) {
-      state.commandId = id
-      state.handler = handler
+      state.commandHandlers[id] = handler
       state.registrations.push('command')
       return { dispose() {} }
+    },
+    executeCommand(command, key, value) {
+      if (command === 'setContext') {
+        state.contextCalls.push({ key, value })
+        state.contextValue = value
+      }
+      return Promise.resolve()
     }
   },
   languages: {
@@ -97,6 +116,11 @@ const vscodeStub = {
           return state.config[key] === undefined ? fallback : state.config[key]
         }
       }
+    },
+    onDidChangeTextDocument(callback) {
+      state.registrations.push('documentListener')
+      state.documentListener = callback
+      return { dispose() {} }
     }
   },
   l10n: {
@@ -170,17 +194,50 @@ const reset = (config, pickResult) => {
   state.config = Object.assign({ defaultFormat: 'ask', spacing: false, hexCase: 'lower' }, config)
 }
 
+const CONVERT_COMMAND_IDS = [
+  'color-conversion.convertToHex',
+  'color-conversion.convertToRgb',
+  'color-conversion.convertToRgba',
+  'color-conversion.convertToHsl',
+  'color-conversion.convertToHsla'
+]
+
 const convert = async (lines, selections, config = {}, pickResult, noEditor) => {
   reset(config, pickResult)
   vscodeStub.window.activeTextEditor = noEditor ? null : makeEditor(lines, selections)
-  await state.handler()
+  await state.commandHandlers['color-conversion.colorConversion']()
+}
+
+const runConvertCommand = async (id, lines, selections, config = {}, noEditor) => {
+  reset(config, undefined)
+  vscodeStub.window.activeTextEditor = noEditor ? null : makeEditor(lines, selections)
+  await state.commandHandlers[id]()
 }
 
 suite('extension activation', () => {
   test('registers the command, hover and code action providers', () => {
-    assert.strictEqual(state.commandId, 'color-conversion.colorConversion')
-    assert.deepStrictEqual(state.registrations, ['command', 'hover', 'codeAction'])
-    assert.strictEqual(context.subscriptions.length, 3)
+    assert.ok(state.commandHandlers['color-conversion.colorConversion'])
+    assert.ok(state.commandHandlers['color-conversion.convertToRgb'])
+    assert.deepStrictEqual(state.registrations, [
+      'command',
+      'command',
+      'command',
+      'command',
+      'command',
+      'command',
+      'hover',
+      'codeAction',
+      'selectionListener',
+      'activeEditorListener',
+      'documentListener'
+    ])
+    assert.strictEqual(context.subscriptions.length, 11)
+  })
+
+  test('registers one direct conversion command per format', () => {
+    CONVERT_COMMAND_IDS.forEach((id) => {
+      assert.strictEqual(typeof state.commandHandlers[id], 'function', `${id} should be registered`)
+    })
   })
 
   test('exposes a refactor code action kind', () => {
@@ -298,5 +355,99 @@ suite('extension code action provider', () => {
   test('offers nothing when there is no color', () => {
     const document = makeDocument(['const a = 1;'])
     assert.deepStrictEqual(extension.codeActionProvider.provideCodeActions(document, new Range(0, 6, 0, 6)), [])
+  })
+})
+
+suite('extension direct conversion commands', () => {
+  test('converts the selected color with a single command', async () => {
+    await runConvertCommand('color-conversion.convertToRgb', ['color: #ff0000;'], [selection(7, 14)])
+    assert.strictEqual(state.edits.length, 1)
+    assert.strictEqual(state.edits[0][0].value, 'rgb(255,0,0)')
+    assert.deepStrictEqual(state.info, ['Color converted'])
+  })
+
+  test('honours the spacing and hexCase settings', async () => {
+    await runConvertCommand(
+      'color-conversion.convertToRgba',
+      ['color: #ff0000;'],
+      [selection(7, 14)],
+      { spacing: true }
+    )
+    assert.strictEqual(state.edits[0][0].value, 'rgba(255, 0, 0, 1)')
+
+    await runConvertCommand(
+      'color-conversion.convertToHex',
+      ['color: rgb(255,0,0);'],
+      [selection(7, 19)],
+      { hexCase: 'upper' }
+    )
+    assert.strictEqual(state.edits[0][0].value, '#F00')
+  })
+
+  test('converts a color under the cursor and every selection', async () => {
+    await runConvertCommand('color-conversion.convertToHex', ['color: red;'], [selection(8, 8)])
+    assert.strictEqual(state.edits[0][0].value, '#f00')
+
+    await runConvertCommand(
+      'color-conversion.convertToHsl',
+      ['a: #ff0000;', 'b: red;'],
+      [selection(3, 10, 0), selection(4, 4, 1)]
+    )
+    assert.strictEqual(state.edits[0].length, 2)
+  })
+
+  test('reports when nothing valid is selected', async () => {
+    await runConvertCommand('color-conversion.convertToRgb', ['const a = 1;'], [selection(6, 7)])
+    assert.strictEqual(state.edits.length, 0)
+    assert.deepStrictEqual(state.info, ['No valid color selected'])
+  })
+
+  test('reports when the color already uses the target format', async () => {
+    await runConvertCommand('color-conversion.convertToHex', ['a: #fff;'], [selection(3, 7)])
+    assert.strictEqual(state.edits.length, 0)
+    assert.deepStrictEqual(state.info, ['Color is already in hex format'])
+  })
+
+  test('does nothing without an active editor', async () => {
+    await runConvertCommand('color-conversion.convertToRgb', [], [], {}, true)
+    assert.strictEqual(state.edits.length, 0)
+    assert.strictEqual(state.info.length, 0)
+  })
+})
+
+suite('extension color context key', () => {
+  const emitSelection = (lines, selections) => {
+    const editor = makeEditor(lines, selections)
+    vscodeStub.window.activeTextEditor = editor
+    state.selectionListener({ textEditor: editor })
+  }
+
+  test('tracks whether the selection holds a color', () => {
+    emitSelection(['color: #ff0000;'], [selection(7, 14)])
+    assert.strictEqual(state.contextValue, true)
+
+    emitSelection(['const a = 1;'], [selection(6, 7)])
+    assert.strictEqual(state.contextValue, false)
+
+    emitSelection(['color: red;'], [selection(8, 8)])
+    assert.strictEqual(state.contextValue, true)
+  })
+
+  test('uses the colorConversion.hasColor context key', () => {
+    assert.ok(state.contextCalls.length > 0, 'setContext should have been called')
+    assert.ok(
+      state.contextCalls.every((call) => call.key === 'colorConversion.hasColor'),
+      'every call should target colorConversion.hasColor'
+    )
+  })
+
+  test('reacts to the active editor changing', () => {
+    vscodeStub.window.activeTextEditor = makeEditor(['const a = 1;'], [selection(6, 7)])
+    state.activeEditorListener(vscodeStub.window.activeTextEditor)
+    assert.strictEqual(state.contextValue, false)
+
+    vscodeStub.window.activeTextEditor = makeEditor(['a: #00ff00;'], [selection(3, 10)])
+    state.activeEditorListener(vscodeStub.window.activeTextEditor)
+    assert.strictEqual(state.contextValue, true)
   })
 })

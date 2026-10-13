@@ -44,6 +44,11 @@ You can also place the cursor on a color (hex, rgb()/hsl() or color keyword) wit
 ```
 Hover a color to preview all formats, or use the light bulb (Refactor) to convert a color in place.
 ```
+>5.Right-click menu
+>
+```
+Select a color (or just put the cursor on it / right-click it) and choose Color Conversion from the context menu to convert it straight to hex, rgb, rgba, hsl or hsla. The submenu only appears when a color is actually recognized.
+```
 
 #### Settings
 

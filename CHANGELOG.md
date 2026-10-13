@@ -19,6 +19,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - 最低 VS Code 版本提升到 ^1.74.0，移除冗余的 `activationEvents`
 
 ### 新增
+- 右键菜单：选中（或光标停在）颜色时出现「颜色转换」子菜单，可直接转成 hex/rgb/rgba/hsl/hsla；子菜单由 `colorConversion.hasColor` 上下文键控制，只有识别到颜色才显示
 - 配置项 `color-conversion.defaultFormat` / `color-conversion.spacing` / `color-conversion.hexCase`
 - 悬停（Hover）展示颜色的 hex/rgb/rgba/hsl/hsla 全部格式
 - 代码操作（Code Action）一键把颜色转换为指定格式
